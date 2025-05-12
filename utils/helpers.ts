@@ -21,8 +21,8 @@ export async function getSitemapUrls(page: Page): Promise<string[]> {
     const response = await page.goto('https://www.netlify.com/sitemap.xml');
     const content = await response?.text() || '';
     
-    // Simple XML parsing to extract URLs
-    const urlRegex = /<loc>(.*?)<\/loc>/g;
+    // Improved XML parsing to extract URLs
+    const urlRegex = /<loc>(https?:\/\/[^<]+)<\/loc>/g;
     const urls: string[] = [];
     let match;
     
@@ -32,8 +32,6 @@ export async function getSitemapUrls(page: Page): Promise<string[]> {
     
     return urls;
 }
-
-
 
 export function isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

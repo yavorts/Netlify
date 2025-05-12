@@ -17,13 +17,25 @@ export class NewsletterComponent extends BasePage {
         return await this.isVisible(this.form);
     }
 
-    async submitForm(email: string) {
-        // Scroll to form
-        await this.page.locator(this.emailInput).scrollIntoViewIfNeeded();
-        
-        await this.fill(this.emailInput, email);
-        await this.page.locator(this.submitButton).click();
+    async waitForFormToBeHidden() {
+        await this.page.waitForSelector(this.form, { state: 'hidden' });
     }
+
+    async submitForm(email: string) {
+        
+        // Fill email with explicit wait
+        await this.page.waitForSelector(this.emailInput, { state: 'visible' });
+        await this.fill(this.emailInput, email);
+        
+        // Click submit with explicit wait and force option
+        await this.page.waitForSelector(this.submitButton, { state: 'visible' });
+        await this.page.click(this.submitButton);
+        
+        // Wait for navigation or success message
+        await this.page.waitForLoadState('networkidle');
+    }
+
+    
 
     async isSuccessMessageVisible() {
         return await this.isVisible(this.subscribeSuccessMessage);

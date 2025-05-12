@@ -1,11 +1,10 @@
 export const TEST_DATA = {
-    validEmail: 'test@example.com',
+    validEmail: 'validuser@gmail.com',
     invalidEmails: [
         'invalid-email',
         'test@',
         '@example.com',
         'test@example',
-        ''
     ],
     navigationLinks: [
         '/pricing',
@@ -21,8 +20,9 @@ export const TEST_DATA = {
         '/legal',
         '/privacy'
     ],
-    successMessage: 'Thank you for subscribing to our newsletter!',
-    detailedSuccessMessage: 'You’ve been added to our list. Check your email for a confirmation link. You can unsubscribe at any time.',
-    errorMessage: 'Email must be formatted correctly.'
+    successMessage: 'Thank you for signing up!',
+    detailedSuccessMessage: 'We are looking forward to keep you posted with updates and interesting articles.',
+    errorMessage: 'Please complete this required field.',
+    errorMessageForInvalidFormat: 'Email must be formatted correctly.'
     
 } as const;

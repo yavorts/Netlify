@@ -14,9 +14,6 @@ export abstract class BasePage {
         await this.page.goto(`${this.baseUrl}${path}`);
     }
 
-    protected async waitForSelector(selector: string) {
-        await this.page.waitForSelector(selector, { state: 'visible' });
-    }
 
     protected async getText(selector: string) {
         return await this.page.textContent(selector);
@@ -26,13 +23,15 @@ export abstract class BasePage {
         return await this.page.isVisible(selector);
     }
 
+    protected async isNotVisible(selector: string) {
+        return await this.page.isHidden(selector);
+    }
+
     protected async click(selector: string) {
-        await this.waitForSelector(selector);
         await this.page.click(selector);
     }
 
     protected async fill(selector: string, value: string) {
-        await this.waitForSelector(selector);
         await this.page.fill(selector, value);
     }
 

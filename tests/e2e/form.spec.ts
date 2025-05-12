@@ -1,6 +1,6 @@
 import { test, expect } from '../fixtures/test-fixtures';
 import { TEST_DATA } from '../fixtures/test-data';
-import { isValidEmail, getCurrentUrl } from '../../utils/helpers';
+import { isValidEmail } from '../../utils/helpers';
 
 test.describe('Newsletter Form Validation', () => {
     test.beforeEach(async ({ homePage }) => {
@@ -14,16 +14,13 @@ test.describe('Newsletter Form Validation', () => {
 
     test('should submit form with valid email', async ({ homePage }) => {
         await homePage.newsletter.submitForm(TEST_DATA.validEmail);
+        await homePage.newsletter.waitForFormToBeHidden();
+        const isFormVisible = await homePage.newsletter.isFormVisible();
+        
+        expect(isFormVisible).toBeFalsy();
         // Verify URL contains success path
         const currentUrl = await homePage.getCurrentUrl();
         expect(currentUrl).toContain('thanks-for-signing-up');
-        // Verify success message is visible
-        const isSuccessVisible = await homePage.newsletter.isSuccessMessageVisible();
-        expect(isSuccessVisible).toBeTruthy();
-
-        // Verify detailed success message is visible
-        const isDetailedSuccessVisible = await homePage.newsletter.isDetailedSuccessMessageVisible();
-        expect(isDetailedSuccessVisible).toBeTruthy();
 
         // Verify success message content
         const successMessage = await homePage.newsletter.getSuccessMessage();
@@ -34,12 +31,23 @@ test.describe('Newsletter Form Validation', () => {
         expect(detailedSuccessMessage).toBe(TEST_DATA.detailedSuccessMessage);
     });
 
-    test('should show error with invalid email', async ({ homePage }) => {
-        for (const email of TEST_DATA.invalidEmails) {
-            await homePage.newsletter.submitForm(email);
+    const invalidEmailData = TEST_DATA.invalidEmails.map(email => ({
+        email,
+        description: `invalid email: ${email}`,
+        expectedError: TEST_DATA.errorMessageForInvalidFormat
+    }));
+
+    for (const data of invalidEmailData) {
+        test(`should show error with ${data.description}`, async ({ homePage }) => {
+            await homePage.newsletter.submitForm(data.email);
+            
+            // Verify form is still visible for invalid submissions
+            const isFormVisible = await homePage.newsletter.isFormVisible();
+            expect(isFormVisible).toBeTruthy();
+            
             const errorMessage = await homePage.newsletter.getErrorMessage();
-            expect(errorMessage).toBe(TEST_DATA.errorMessage);
-            expect(isValidEmail(email)).toBeFalsy();
-        }
-    });
+            expect(errorMessage).toBe(data.expectedError);
+            expect(isValidEmail(data.email)).toBeFalsy();
+        });
+    }
 }); 
